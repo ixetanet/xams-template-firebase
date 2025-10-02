@@ -4,14 +4,13 @@ import { NavLink } from "@mantine/core";
 import { IconLogout } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useAuth } from "@ixeta/headless-auth-react";
-import Loading from "@/components/common/Loading";
 
 const Admin = () => {
   const router = useRouter();
   const auth = useAuth();
 
   if (!auth.isReady) {
-    return <Loading />;
+    return <div>Loading...</div>;
   }
 
   return (

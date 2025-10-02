@@ -1,7 +1,7 @@
 import { useAuth } from "@ixeta/headless-auth-react";
 import React from "react";
 
-const protectedpage = () => {
+const ProtectedPage = () => {
   const auth = useAuth();
 
   if (!auth.isReady) {
@@ -15,4 +15,4 @@ const protectedpage = () => {
   return <div>Protected Page</div>;
 };
 
-export default protectedpage;
+export default ProtectedPage;
