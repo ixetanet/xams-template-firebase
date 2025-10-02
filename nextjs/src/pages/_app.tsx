@@ -10,8 +10,8 @@ import {
   AuthContextProvider,
   getQueryParam,
 } from "@ixeta/xams";
-import "@ixeta/xams/dist/styles.css";
-import "@ixeta/xams/dist/global.css";
+import "@ixeta/xams/styles.css";
+import "@ixeta/xams/global.css";
 import { useRouter } from "next/router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@ixeta/headless-auth-react";
