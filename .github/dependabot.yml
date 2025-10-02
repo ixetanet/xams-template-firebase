@@ -1,0 +1,35 @@
+version: 2
+updates:
+  # NPM dependencies in Next.js project
+  - package-ecosystem: "npm"
+    directory: "/nextjs"
+    schedule:
+      interval: "daily"
+    groups:
+      # Group headless-auth packages together
+      ixeta-headless-auth:
+        patterns:
+          - "@ixeta/headless-auth-*"
+      # Group xams packages together
+      ixeta-xams:
+        patterns:
+          - "@ixeta/xams*"
+    labels:
+      - "dependencies"
+      - "npm"
+    open-pull-requests-limit: 10
+
+  # NuGet dependencies in ASP.NET project
+  - package-ecosystem: "nuget"
+    directory: "/aspnet/MyXProject.Web"
+    schedule:
+      interval: "daily"
+    groups:
+      # Group Xams packages together
+      xams:
+        patterns:
+          - "Xams.*"
+    labels:
+      - "dependencies"
+      - "nuget"
+    open-pull-requests-limit: 5
