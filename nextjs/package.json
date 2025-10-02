@@ -15,7 +15,7 @@
     "@ixeta/xams-firebase": "^1.0.1",
     "@mantine/core": "^8.3.0",
     "@mantine/dates": "^8.3.0",
-    "@mantine/form": "^8.3.0",
+    "@mantine/form": "^8.3.3",
     "@mantine/hooks": "^8.3.0",
     "@mantine/notifications": "^8.3.0",
     "@mantine/tiptap": "^8.3.0",
