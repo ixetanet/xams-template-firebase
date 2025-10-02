@@ -31,8 +31,6 @@ This URL handles email verification, password reset, and other Firebase authenti
 
 ## Google Provider Setup
 
-## Google Provider
-
 To configure Google as an authentication provider and enable custom domain redirects:
 
 1. **Go to Google Cloud Console**
