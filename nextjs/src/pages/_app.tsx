@@ -28,30 +28,23 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>
-        <XamsFirebaseAuthProvider apiUrl={process.env.NEXT_PUBLIC_API ?? ""}>
-          {(context) => (
-            <AuthProvider authConfig={context.firebaseAuthConfig}>
-              <AuthContextProvider
-                apiUrl={process.env.NEXT_PUBLIC_API as string}
-                headers={{
-                  UserId: userId as string,
-                }}
-                onUnauthorized={() => {
-                  context.firebaseAuthConfig?.signOut();
-                  if (router.isReady) {
-                    router.push("/");
-                  }
-                }}
-                getAccessToken={context.firebaseAuthConfig?.getAccessToken}
-              >
-                <AppContextProvider>
-                  <Notifications />
-                  <Component {...pageProps} />
-                  <div id="auth-recaptcha" className="invisible" />
-                </AppContextProvider>
-              </AuthContextProvider>
-            </AuthProvider>
-          )}
+        <XamsFirebaseAuthProvider
+          apiUrl={process.env.NEXT_PUBLIC_API ?? ""}
+          headers={{
+            UserId: userId as string,
+          }}
+          onUnauthorized={(context) => {
+            context.firebaseAuthConfig?.signOut();
+            if (router.isReady) {
+              router.push("/");
+            }
+          }}
+        >
+          <AppContextProvider>
+            <Notifications />
+            <Component {...pageProps} />
+            <div id="auth-recaptcha" className="invisible" />
+          </AppContextProvider>
         </XamsFirebaseAuthProvider>
       </MantineProvider>
     </QueryClientProvider>
