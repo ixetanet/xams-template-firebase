@@ -4,7 +4,15 @@ import { LoginPage } from "@ixeta/xams-firebase";
 
 const Login = () => {
   const router = useRouter();
-  return <LoginPage onLoginSuccess={() => router.push("/protectedpage")} />;
+  return (
+    <LoginPage
+      onLoginSuccess={() => {
+        const redirectUrl = localStorage.getItem("postLoginRedirect");
+        localStorage.removeItem("postLoginRedirect");
+        router.push(redirectUrl || "/app/coupons");
+      }}
+    />
+  );
 };
 
 export default Login;
