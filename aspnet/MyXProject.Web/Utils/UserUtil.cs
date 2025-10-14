@@ -1,12 +1,15 @@
+using System.Collections.Concurrent;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using MyXProject.Web.Entities;
 using Xams.Core.Entities;
+using Xams.Core.Startup;
 
 namespace MyXProject.Web.Utils;
 
 public class UserUtil
 {
+    private static ConcurrentDictionary<string, Guid> _users = new();
     public static async Task<Guid> GetUserId(HttpContext httpContext)
     {
         var userIdClaim = httpContext.User.Claims
@@ -20,16 +23,16 @@ public class UserUtil
         {
             throw new Exception("UserId not found");
         }
-        
+
         using (var db = new DataContext())
         {
-            var user = await GetUser(db, userIdClaim, emailClaim);
+            var userId = await GetUserId(db, userIdClaim, emailClaim);
             try
             {
                 // Attempt to create the user
-                if (user == null)
+                if (userId == Guid.Empty)
                 {
-                    user = await CreateUser(db, userIdClaim, emailClaim);
+                    userId = await CreateUser(db, userIdClaim, emailClaim);
                 }
             }
             catch (Exception e)
@@ -39,25 +42,46 @@ public class UserUtil
                 var rnd = new Random(DateTime.Now.Millisecond);
                 await Task.Delay(rnd.Next(20, 150));
                 // Reattempt to retrieve
-                user = await GetUser(db, userIdClaim, emailClaim);
-                if (user == null)
+                userId = await GetUserId(db, userIdClaim, emailClaim);
+                if (userId == Guid.Empty)
                 {
-                    user = await CreateUser(db, userIdClaim, emailClaim);
+                    userId = await CreateUser(db, userIdClaim, emailClaim);
                 }
             }
 
-            return user.UserId;
+            return userId;
         }
     }
 
-    private static async Task<AppUser?> GetUser(DataContext db, string? userIdClaim, string? emailClaim)
+    private static async Task<Guid> GetUserId(DataContext db, string? userIdClaim, string? emailClaim)
     {
-        var user = await db.Users.FirstOrDefaultAsync(x => x.FirebaseId == userIdClaim) ?? 
-                   await db.Users.FirstOrDefaultAsync(x => x.EmailAddress == emailClaim);
-        return user;
+        Guid userId;
+
+        if (userIdClaim != null)
+        {
+            if (_users.TryGetValue(userIdClaim, out userId))
+            {
+                return userId;
+            }
+        }
+
+        userId = await db.Users
+            .Where(x => x.FirebaseId == userIdClaim)
+            .Select(x => x.UserId)
+            .FirstOrDefaultAsync();
+
+        if (userId == Guid.Empty)
+        {
+            userId =await db.Users
+                .Where(x => x.EmailAddress == emailClaim)
+                .Select(x => x.UserId)
+                .FirstOrDefaultAsync();
+        }
+
+        return userId;
     }
 
-    private static async Task<AppUser> CreateUser(DataContext db, string userIdClaim, string? emailClaim)
+    private static async Task<Guid> CreateUser(DataContext db, string userIdClaim, string? emailClaim)
     {
         var user = new AppUser();
         user.FirebaseId = userIdClaim;
@@ -67,11 +91,19 @@ public class UserUtil
         db.Add(user);
         await db.SaveChangesAsync();
 
-        var userRole = new UserRole<AppUser, Role>();
-        userRole.UserId = user.UserId;
-        userRole.RoleId = new Guid("0526627a-ac19-4228-a512-8a817edd4e95"); // User role
-        db.Add(userRole);
+        // Assign default Roles
+        if (emailClaim == "xxx@xxx.io")
+        {
+            var adminRole = new UserRole<AppUser, Role>();
+            adminRole.UserId = user.UserId;
+            adminRole.RoleId = SystemRecords.SystemAdministratorRoleId; // Admin role
+            db.Add(adminRole);
+        }
+
         await db.SaveChangesAsync();
-        return user;
+
+        _users.TryAdd(userIdClaim, user.UserId);
+
+        return user.UserId;
     }
 }
