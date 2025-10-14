@@ -5,16 +5,12 @@ import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 import { Notifications } from "@mantine/notifications";
 import { createTheme, MantineProvider } from "@mantine/core";
-import {
-  AppContextProvider,
-  AuthContextProvider,
-  getQueryParam,
-} from "@ixeta/xams";
+import { AppContextProvider, getQueryParam } from "@ixeta/xams";
 import "@ixeta/xams/styles.css";
 import "@ixeta/xams/global.css";
+import "@ixeta/xams-firebase/styles.css";
 import { useRouter } from "next/router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@ixeta/headless-auth-react";
 import { XamsFirebaseAuthProvider } from "@ixeta/xams-firebase";
 
 const queryClient = new QueryClient();
