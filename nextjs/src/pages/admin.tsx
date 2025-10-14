@@ -1,22 +1,30 @@
 import { AdminDashboard } from "@ixeta/xams";
-import React, { useEffect } from "react";
-import { Avatar, Box, Button, Divider, NavLink } from "@mantine/core";
+import React from "react";
+import { Avatar, Box, Button, Divider, Loader, NavLink } from "@mantine/core";
 import { IconChevronRight, IconLogout } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import { useAuth } from "@ixeta/headless-auth-react";
-import { useXamsFirebaseAuth } from "@ixeta/xams-firebase";
+import { useAuthProtect } from "@ixeta/xams-firebase";
 
 const Admin = () => {
   const router = useRouter();
-  const auth = useAuth();
-  const fbAuth = useXamsFirebaseAuth();
+  const auth = useAuthProtect();
 
-  if (!auth.isReady) {
-    return <div>Loading...</div>;
+  if (auth.isLoading || !router.isReady) {
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (auth.isError) {
+    return <div>Error loading auth settings</div>;
   }
 
   if (!auth.isLoggedIn) {
-    return <div>You are not logged in</div>;
+    localStorage.setItem("postLoginRedirect", router.asPath);
+    router.push("/login");
+    return <></>;
   }
 
   return (
@@ -40,7 +48,7 @@ const Admin = () => {
         <Box>
           <Divider />
           <NavLink
-            label={fbAuth.firebaseAuth?.currentUser?.email || "User"}
+            label={auth.firebaseAuth?.currentUser?.email || "User"}
             leftSection={<Avatar size="sm" />}
             rightSection={<IconChevronRight size={14} stroke={1.5} />}
             onClick={() => router.push("/profile")}
@@ -52,7 +60,7 @@ const Admin = () => {
         <div className="w-full h-full flex flex-col gap-2 justify-center items-center">
           You don&apos;t have permission to view this page. Please contact your
           system administrator.
-          {fbAuth.firebaseApp != null && (
+          {auth.firebaseApp != null && (
             <Button
               onClick={() => {
                 auth.signOut();
