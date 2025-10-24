@@ -59,3 +59,5 @@ The `/__/auth/handler` endpoint is automatically provided by Xams (`app.AddFireb
 In Program.cs, with useAuth = true, navigate to the admin dashboard to verify Firebase authentication is working:
 
 Example: `https://localhost:7102/xams`
+
+You should see the Firebase login page with your configured authentication providers.
