@@ -53,3 +53,9 @@ https://localhost:PORT/__/auth/handler      (Development)
 ```
 
 The `/__/auth/handler` endpoint is automatically provided by Xams (`app.AddFirebaseAuthProxy()`), implementing [Firebase's redirect best practice Option 3](https://firebase.google.com/docs/auth/web/redirect-best-practices) - proxying auth through your backend. This is **required** for custom domains with Google OAuth.
+
+## Test Your Configuration
+
+In Program.cs, with useAuth = true, navigate to the admin dashboard to verify Firebase authentication is working:
+
+Example: `https://localhost:7102/xams`
