@@ -1,3 +1,5 @@
+# Setup Instructions
+
 ## Firebase Configuration
 
 Add your Firebase configuration to appsettings.json:
